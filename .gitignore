@@ -1,0 +1,8 @@
+*.iml
+.idea
+target
+
+# GraalVM native image
+consoleApp-1.0-SNAPSHOT
+consoleApp-1.0-SNAPSHOT.build_artifacts.txt
+dependency-reduced-pom.xml
