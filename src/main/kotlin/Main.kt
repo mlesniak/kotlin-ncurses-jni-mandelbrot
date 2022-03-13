@@ -1,9 +1,10 @@
 package com.mlesniak.main
 
 fun main() {
-    System.load("/Users/m/Documents/kotlin-jni/native.so")
-    println("Hello World!")
-    foo(20)
-}
+    System.load("/Users/m/Documents/kotlin-jni/target/native.so")
+    NCurses.init()
+    val res = NCurses.getch()
+    NCurses.endwin()
 
-external fun foo(n: Int)
+    println(res)
+}

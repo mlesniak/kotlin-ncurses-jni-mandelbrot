@@ -6,3 +6,7 @@ target
 consoleApp-1.0-SNAPSHOT
 consoleApp-1.0-SNAPSHOT.build_artifacts.txt
 dependency-reduced-pom.xml
+
+# No binaries from C code
+*.o
+*.so
