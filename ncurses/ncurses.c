@@ -30,3 +30,7 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_addch(JNIEnv *env, jclass 
     mvaddch(y, x, c);
 }
 
+JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_timeout(JNIEnv *env, jclass obj, jint t) {
+    timeout(t);
+}
+

@@ -6,6 +6,9 @@ class NCurses {
         external fun init()
 
         @JvmStatic
+        external fun timeout(t: Int)
+
+        @JvmStatic
         external fun addch(x: Int, y: Int, c: Char)
 
         @JvmStatic
