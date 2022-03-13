@@ -7,6 +7,7 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_init(JNIEnv *env, jclass o
     initscr();
     cbreak();
     noecho();
+    curs_set(0);
 }
 
 JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_getch(JNIEnv *env, jclass obj) {
@@ -16,3 +17,16 @@ JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_getch(JNIEnv *env, jclass 
 JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_endwin(JNIEnv *env, jclass obj) {
     endwin();
 }
+
+JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_lines(JNIEnv *env, jclass obj) {
+    return LINES;
+}
+
+JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_cols(JNIEnv *env, jclass obj) {
+    return COLS;
+}
+
+JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_addch(JNIEnv *env, jclass obj, jint x, jint y, jchar c) {
+    mvaddch(y, x, c);
+}
+
