@@ -4,12 +4,8 @@
 
     mvn clean package
 
-## How to use this template (remove this section)
+## C Commands
 
-    export name=main
-    gh repo create --private -p mlesniak/kotlin-maven-template --clone $name
+    gcc -c -I$JAVA_HOME/include -I$JAVA_HOME/include/darwin demo.c
+    gcc -shared -o native.so demo.o
 
-or
-
-    export name=main
-    git archive --prefix $name/ --format zip HEAD >$name.zip
