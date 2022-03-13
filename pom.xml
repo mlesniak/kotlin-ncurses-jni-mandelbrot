@@ -33,20 +33,20 @@
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <!--<testSourceDirectory>src/test/kotlin</testSourceDirectory>-->
         <plugins>
-            <!--<plugin>-->
-            <!--    <groupId>com.github.gantsign.maven</groupId>-->
-            <!--    <artifactId>ktlint-maven-plugin</artifactId>-->
-            <!--    <version>1.12.1</version>-->
-            <!--    <executions>-->
-            <!--        <execution>-->
-            <!--            <id>check</id>-->
-            <!--            <phase>compile</phase>-->
-            <!--            <goals>-->
-            <!--                <goal>check</goal>-->
-            <!--            </goals>-->
-            <!--        </execution>-->
-            <!--    </executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>com.github.gantsign.maven</groupId>
+                <artifactId>ktlint-maven-plugin</artifactId>
+                <version>1.12.1</version>
+                <executions>
+                    <execution>
+                        <id>check</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -64,6 +64,24 @@
                         <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>build-curses</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <executable>make</executable>
+                            <workingDirectory>ncurses</workingDirectory>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
                         </goals>
                     </execution>
                 </executions>

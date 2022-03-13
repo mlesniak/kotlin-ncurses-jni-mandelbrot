@@ -22,6 +22,5 @@ class NCurses {
 
         @JvmStatic
         external fun cols(): Int
-
     }
 }

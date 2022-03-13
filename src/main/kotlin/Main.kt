@@ -18,7 +18,9 @@ fun main() {
     while (true) {
         randomChar('*')
         randomChar('.')
-        randomChar(' ')
+        repeat(10) {
+            randomChar(' ')
+        }
 
         val res = getch()
         if (res != -1) {
