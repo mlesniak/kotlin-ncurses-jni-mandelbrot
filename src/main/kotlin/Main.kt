@@ -19,27 +19,33 @@ fun main() {
     val zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 128
 
-    val width = 80
-    val height = 25
+    val width = 800
+    val height = 250
 
     val w = (zoom.x2 - zoom.x1).absoluteValue
     val h = (zoom.y2 - zoom.y1).absoluteValue
     val wStep = w / width
     val hStep = h / height
 
-
     for (y in 0 until height) {
         val y1 = zoom.y1 - y * hStep
         for (x in 0 until width) {
             val x1 = x * wStep + zoom.x1
-            if (checkIteration(x1, y1, maxIteration) < 32) {
-                print("*")
-            } else {
-                print(" ")
-            }
+
+            val iterations = checkIteration(x1, y1, maxIteration)
+            val c = asciiChar(maxIteration, iterations)
+            print(c)
         }
         println()
     }
+}
+
+fun asciiChar(maxIteration: Int, iter: Int): Char {
+    // val density = "Ñ@#W$9876543210?!abc;:+=-,._ ".reversed()
+    val density = "Ñ@#W$9876543210?!abc;:+=-,. ".reversed()
+
+    val index = ((density.length - 1).toDouble() / maxIteration * iter).toInt()
+    return density[index]
 }
 
 fun checkIteration(x0: Double, y0: Double, maxIteration: Int): Int {
