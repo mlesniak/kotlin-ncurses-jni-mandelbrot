@@ -16,7 +16,7 @@ data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 fun main() {
     // x0 := scaled x coordinate of pixel (scaled to lie in the Mandelbrot X scale (-2.00, 0.47))
     // y0 := scaled y coordinate of pixel (scaled to lie in the Mandelbrot Y scale (-1.12, 1.12))
-    val zoom = Rect(-2.0, 1.0, 1.0, -1.0)
+    val zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 128
 
     val width = 80
