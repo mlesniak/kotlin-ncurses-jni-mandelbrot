@@ -11,6 +11,10 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 fun main() {
+
+}
+
+private fun ncursesDemo() {
     System.loadLibrary("native")
 
     init()
