@@ -8,11 +8,13 @@ import com.mlesniak.main.NCurses.Companion.getch
 import com.mlesniak.main.NCurses.Companion.init
 import com.mlesniak.main.NCurses.Companion.lines
 import com.mlesniak.main.NCurses.Companion.timeout
+import java.io.File
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
+data class Pos(val x: Int = 0, val y: Int = 0)
 
 fun main() {
     System.loadLibrary("native")
@@ -43,16 +45,22 @@ fun main() {
 
         val ch = getch()
         when (ch) {
-            27 -> break
+            'q'.code -> break
+            'z'.code -> {
+                zoom = zoom.copy(
+                    x1 = zoom.x1 / 2,
+                    y1 = zoom.y1 / 2,
+                    x2 = zoom.x2 / 2,
+                    y2 = zoom.y2 / 2,
+                )
+                clear()
+            }
+            409 -> {
+                val p = Pos()
+                NCurses.getevent(p)
+                File("out").appendText("${p}\n")
+            }
         }
-
-        zoom = zoom.copy(
-            x1 = zoom.x1 / 2,
-            y1 = zoom.y1 / 2,
-            x2 = zoom.x2 / 2,
-            y2 = zoom.y2 / 2,
-        )
-        clear()
     }
 
     endwin()

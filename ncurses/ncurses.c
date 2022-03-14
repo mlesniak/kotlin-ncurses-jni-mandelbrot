@@ -8,6 +8,9 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_init(JNIEnv *env, jclass o
     cbreak();
     noecho();
     curs_set(0);
+
+    mousemask(BUTTON1_PRESSED | BUTTON2_PRESSED, NULL);
+    keypad(stdscr, TRUE);
 }
 
 JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_getch(JNIEnv *env, jclass obj) {
@@ -42,4 +45,23 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_addch(JNIEnv *env, jclass 
 JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_timeout(JNIEnv *env, jclass obj, jint t) {
     timeout(t);
 }
+
+JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_getevent(JNIEnv *env, jclass obj, jobject jobj) {
+    MEVENT event;
+    if (getmouse(&event) == OK) {
+//        char s[80];
+//        sprintf(s, "%d/%d", event.x, event.y);
+//        mvaddstr(0,0, s);
+//        refresh();
+        // https://stackoverflow.com/questions/40004522/how-to-get-values-from-jobject-in-c-using-jni
+
+        jclass cls = (*env)->GetObjectClass(env, jobj);
+        jfieldID x = (*env)->GetFieldID(env, cls, "x", "I");
+        (*env)->SetIntField(env, jobj, x, event.x);
+        jfieldID y = (*env)->GetFieldID(env, cls, "y", "I");
+        (*env)->SetIntField(env, jobj, y, event.y);
+
+    }
+}
+
 

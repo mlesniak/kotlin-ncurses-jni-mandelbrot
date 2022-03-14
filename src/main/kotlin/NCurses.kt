@@ -28,5 +28,8 @@ class NCurses {
 
         @JvmStatic
         external fun refresh(): Int
+
+        @JvmStatic
+        external fun getevent(p: Pos)
     }
 }
