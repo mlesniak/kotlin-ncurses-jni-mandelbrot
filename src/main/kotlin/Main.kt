@@ -64,10 +64,10 @@ fun main() {
                 File("out").appendText("$cx,$cy\n")
 
                 zoom = zoom.copy(
-                    x1 = cx - (zoom.x2 - zoom.x1) / 2.0,
-                    x2 = cx + (zoom.x2 - zoom.x1) / 2.0,
-                    y1 = cy - (zoom.y2 - zoom.y1) / 2.0,
-                    y2 = cy + (zoom.y2 - zoom.y1) / 2.0,
+                    x1 = cx - (zoom.x2 - zoom.x1) / 4.0,
+                    x2 = cx + (zoom.x2 - zoom.x1) / 4.0,
+                    y1 = cy - (zoom.y2 - zoom.y1) / 4.0,
+                    y2 = cy + (zoom.y2 - zoom.y1) / 4.0,
                 )
                 clear()
             }
