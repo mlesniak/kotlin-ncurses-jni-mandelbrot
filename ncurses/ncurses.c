@@ -22,6 +22,11 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_refresh(JNIEnv *env, jclas
     refresh();
 }
 
+JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_clear(JNIEnv *env, jclass obj) {
+    clear();
+}
+
+
 JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_lines(JNIEnv *env, jclass obj) {
     return LINES;
 }

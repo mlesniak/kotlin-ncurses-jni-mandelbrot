@@ -1,6 +1,7 @@
 package com.mlesniak.main
 
 import com.mlesniak.main.NCurses.Companion.addch
+import com.mlesniak.main.NCurses.Companion.clear
 import com.mlesniak.main.NCurses.Companion.cols
 import com.mlesniak.main.NCurses.Companion.endwin
 import com.mlesniak.main.NCurses.Companion.getch
@@ -17,29 +18,43 @@ fun main() {
     System.loadLibrary("native")
     init()
 
-    val zoom = Rect(-2.0, 1.2, 1.0, -1.2)
+    var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 128
 
     val width = cols()
     val height = lines()
 
-    val w = (zoom.x2 - zoom.x1).absoluteValue
-    val h = (zoom.y2 - zoom.y1).absoluteValue
-    val wStep = w / width
-    val hStep = h / height
+    while (true) {
+        val w = (zoom.x2 - zoom.x1).absoluteValue
+        val h = (zoom.y2 - zoom.y1).absoluteValue
+        val wStep = w / width
+        val hStep = h / height
 
-    for (y in 0 until height) {
-        val y1 = zoom.y1 - y * hStep
-        for (x in 0 until width) {
-            val x1 = x * wStep + zoom.x1
+        for (y in 0 until height) {
+            val y1 = zoom.y1 - y * hStep
+            for (x in 0 until width) {
+                val x1 = x * wStep + zoom.x1
 
-            val iterations = checkIteration(x1, y1, maxIteration)
-            val c = asciiChar(maxIteration, iterations)
-            addch(x, y, c)
+                val iterations = checkIteration(x1, y1, maxIteration)
+                val c = asciiChar(maxIteration, iterations)
+                addch(x, y, c)
+            }
         }
+
+        val ch = getch()
+        when (ch) {
+            27 -> break
+        }
+
+        zoom = zoom.copy(
+            x1 = zoom.x1 / 2,
+            y1 = zoom.y1 / 2,
+            x2 = zoom.x2 / 2,
+            y2 = zoom.y2 / 2,
+        )
+        clear()
     }
 
-    getch()
     endwin()
 }
 

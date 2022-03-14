@@ -18,6 +18,9 @@ class NCurses {
         external fun endwin()
 
         @JvmStatic
+        external fun clear()
+
+        @JvmStatic
         external fun lines(): Int
 
         @JvmStatic
