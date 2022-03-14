@@ -19,8 +19,8 @@ fun main() {
     val zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 128
 
-    val width = 800
-    val height = 250
+    val width = 80
+    val height = 25
 
     val w = (zoom.x2 - zoom.x1).absoluteValue
     val h = (zoom.y2 - zoom.y1).absoluteValue
