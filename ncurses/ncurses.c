@@ -18,6 +18,10 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_endwin(JNIEnv *env, jclass
     endwin();
 }
 
+JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_refresh(JNIEnv *env, jclass obj) {
+    refresh();
+}
+
 JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_lines(JNIEnv *env, jclass obj) {
     return LINES;
 }

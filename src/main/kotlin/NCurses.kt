@@ -22,5 +22,8 @@ class NCurses {
 
         @JvmStatic
         external fun cols(): Int
+
+        @JvmStatic
+        external fun refresh(): Int
     }
 }

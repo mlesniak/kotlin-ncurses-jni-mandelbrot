@@ -16,9 +16,11 @@ fun main() {
     init()
     timeout(1)
     while (true) {
+        // refresh()
+
         randomChar('*')
         randomChar('.')
-        repeat(10) {
+        repeat(50) {
             randomChar(' ')
         }
 
