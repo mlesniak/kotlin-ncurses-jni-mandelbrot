@@ -14,13 +14,14 @@ import kotlin.random.nextInt
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 
 fun main() {
-    // x0 := scaled x coordinate of pixel (scaled to lie in the Mandelbrot X scale (-2.00, 0.47))
-    // y0 := scaled y coordinate of pixel (scaled to lie in the Mandelbrot Y scale (-1.12, 1.12))
+    System.loadLibrary("native")
+    init()
+
     val zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 128
 
-    val width = 80
-    val height = 25
+    val width = cols()
+    val height = lines()
 
     val w = (zoom.x2 - zoom.x1).absoluteValue
     val h = (zoom.y2 - zoom.y1).absoluteValue
@@ -34,10 +35,12 @@ fun main() {
 
             val iterations = checkIteration(x1, y1, maxIteration)
             val c = asciiChar(maxIteration, iterations)
-            print(c)
+            addch(x, y, c)
         }
-        println()
     }
+
+    getch()
+    endwin()
 }
 
 fun asciiChar(maxIteration: Int, iter: Int): Char {
