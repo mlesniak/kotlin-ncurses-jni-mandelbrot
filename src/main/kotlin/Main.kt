@@ -59,6 +59,17 @@ fun main() {
                 val p = Pos()
                 NCurses.getevent(p)
                 File("out").appendText("${p}\n")
+                val cx = p.x * wStep + zoom.x1
+                val cy = zoom.y1 - p.y * hStep
+                File("out").appendText("$cx,$cy\n")
+
+                zoom = zoom.copy(
+                    x1 = cx - (zoom.x2 - zoom.x1) / 2.0,
+                    x2 = cx + (zoom.x2 - zoom.x1) / 2.0,
+                    y1 = cy - (zoom.y2 - zoom.y1) / 2.0,
+                    y2 = cy + (zoom.y2 - zoom.y1) / 2.0,
+                )
+                clear()
             }
         }
     }
