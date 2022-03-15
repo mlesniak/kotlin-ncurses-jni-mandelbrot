@@ -25,6 +25,7 @@ fun main() {
 
     val width = cols()
     val height = lines()
+    var lastClick = -1L
 
     while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
@@ -56,6 +57,11 @@ fun main() {
                 clear()
             }
             409 -> {
+                if (System.currentTimeMillis() - lastClick < 200) {
+                    continue
+                }
+
+                lastClick = System.currentTimeMillis()
                 val p = Pos()
                 NCurses.getevent(p)
                 File("out").appendText("${p}\n")
@@ -63,7 +69,6 @@ fun main() {
                 val cy = zoom.y1 - p.y * hStep
                 File("out").appendText("$cx,$cy\n")
 
-                // TODO(mlesniak) Zoom bug???
                 zoom = zoom.copy(
                     x1 = cx - (zoom.x2 - zoom.x1) / 4.0,
                     x2 = cx + (zoom.x2 - zoom.x1) / 4.0,
