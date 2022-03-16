@@ -23,7 +23,6 @@ fun main() {
     val width = cols()
     val height = lines()
     var lastClick = -1L
-    var renderFinished = false
 
     while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
@@ -31,7 +30,6 @@ fun main() {
         val wStep = w / width
         val hStep = h / height
 
-        renderFinished = false
         for (y in 0 until height) {
             val y1 = zoom.y1 - y * hStep
             for (x in 0 until width) {
@@ -43,7 +41,6 @@ fun main() {
                 addch(x, y, c, col)
             }
         }
-        renderFinished = true
 
         val ch = getch()
         when (ch) {
@@ -59,7 +56,7 @@ fun main() {
             }
             409 -> {
                 // TODO(mlesniak) Fix still open zoom bug.
-                if (!renderFinished || System.currentTimeMillis() - lastClick < 200) {
+                if (System.currentTimeMillis() - lastClick < 200) {
                     continue
                 }
                 lastClick = System.currentTimeMillis()
