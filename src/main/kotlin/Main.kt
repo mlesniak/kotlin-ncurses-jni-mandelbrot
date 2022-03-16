@@ -7,11 +7,8 @@ import com.mlesniak.main.NCurses.Companion.endwin
 import com.mlesniak.main.NCurses.Companion.getch
 import com.mlesniak.main.NCurses.Companion.init
 import com.mlesniak.main.NCurses.Companion.lines
-import com.mlesniak.main.NCurses.Companion.timeout
 import java.io.File
 import kotlin.math.absoluteValue
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 data class Pos(val x: Int = 0, val y: Int = 0)
@@ -21,11 +18,12 @@ fun main() {
     init()
 
     var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
-    val maxIteration = 128
+    val maxIteration = 256
 
     val width = cols()
     val height = lines()
     var lastClick = -1L
+    var renderFinished = false
 
     while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
@@ -33,6 +31,7 @@ fun main() {
         val wStep = w / width
         val hStep = h / height
 
+        renderFinished = false
         for (y in 0 until height) {
             val y1 = zoom.y1 - y * hStep
             for (x in 0 until width) {
@@ -40,9 +39,11 @@ fun main() {
 
                 val iterations = checkIteration(x1, y1, maxIteration)
                 val c = asciiChar(maxIteration, iterations)
-                addch(x, y, c)
+                val col = color(maxIteration, iterations)
+                addch(x, y, c, col)
             }
         }
+        renderFinished = true
 
         val ch = getch()
         when (ch) {
@@ -57,17 +58,16 @@ fun main() {
                 clear()
             }
             409 -> {
-                if (System.currentTimeMillis() - lastClick < 200) {
+                // TODO(mlesniak) Fix still open zoom bug.
+                if (!renderFinished || System.currentTimeMillis() - lastClick < 200) {
                     continue
                 }
-
                 lastClick = System.currentTimeMillis()
+
                 val p = Pos()
                 NCurses.getevent(p)
-                File("out").appendText("${p}\n")
                 val cx = p.x * wStep + zoom.x1
                 val cy = zoom.y1 - p.y * hStep
-                File("out").appendText("$cx,$cy\n")
 
                 zoom = zoom.copy(
                     x1 = cx - (zoom.x2 - zoom.x1) / 4.0,
@@ -83,9 +83,15 @@ fun main() {
     endwin()
 }
 
+fun color(maxIteration: Int, iter: Int): Int {
+    val colorStretchFactor = 20
+    val maxColors = 24
+    val colors = (1..maxColors).toList() + List(colorStretchFactor) { 24 }
+    return colors[((colors.size - 1).toDouble() / maxIteration * iter).toInt()]
+}
+
 fun asciiChar(maxIteration: Int, iter: Int): Char {
-    // val density = "Ñ@#W$9876543210?!abc;:+=-,._ ".reversed()
-    val density = "Ñ@#W$9876543210?!abc;:+=-,. ".reversed()
+    val density = " .,-=+:;cba!?0123456789\$W#@Ñ"
 
     val index = ((density.length - 1).toDouble() / maxIteration * iter).toInt()
     return density[index]
@@ -108,31 +114,6 @@ fun checkIteration(x0: Double, y0: Double, maxIteration: Int): Int {
     return iter
 }
 
-private fun ncursesDemo() {
-    fun randomChar(c: Char) {
-        val x = Random.nextInt(0..cols())
-        val y = Random.nextInt(0..lines())
-        addch(x, y, c)
-    }
-
-    System.loadLibrary("native")
-
-    init()
-    timeout(1)
-    while (true) {
-        // refresh()
-
-        randomChar('*')
-        randomChar('.')
-        repeat(50) {
-            randomChar(' ')
-        }
-
-        val res = getch()
-        if (res != -1) {
-            break
-        }
-    }
-
-    endwin()
+private fun debug(msg: Any) {
+    File("out").appendText(msg.toString())
 }

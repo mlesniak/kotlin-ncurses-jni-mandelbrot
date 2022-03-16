@@ -9,7 +9,7 @@ class NCurses {
         external fun timeout(t: Int)
 
         @JvmStatic
-        external fun addch(x: Int, y: Int, c: Char)
+        external fun addch(x: Int, y: Int, c: Char, color: Int = 25)
 
         @JvmStatic
         external fun getch(): Int

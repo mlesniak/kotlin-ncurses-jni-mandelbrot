@@ -3,6 +3,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
+// TODO(mlesniak) Documentation
 JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_init(JNIEnv *env, jclass obj) {
     initscr();
     cbreak();
@@ -11,6 +12,14 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_init(JNIEnv *env, jclass o
 
     mousemask(BUTTON1_PRESSED | BUTTON2_PRESSED, NULL);
     keypad(stdscr, TRUE);
+
+    start_color();
+
+    // 24 colors: 233 .. 255 in 1..23 and 0 for black and 24 for bright white.
+    int startColor = 233;
+    for (int i = startColor; i <= 255; i++) {
+        init_pair(i - startColor + 1, i, 0);
+    }
 }
 
 JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_getch(JNIEnv *env, jclass obj) {
@@ -38,7 +47,8 @@ JNIEXPORT jint JNICALL Java_com_mlesniak_main_NCurses_cols(JNIEnv *env, jclass o
     return COLS;
 }
 
-JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_addch(JNIEnv *env, jclass obj, jint x, jint y, jchar c) {
+JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_addch(JNIEnv *env, jclass obj, jint x, jint y, jchar c, jint color) {
+    attron(COLOR_PAIR(color));
     mvaddch(y, x, c);
 }
 
