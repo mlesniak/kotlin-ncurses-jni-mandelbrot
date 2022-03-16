@@ -29,7 +29,6 @@ fun main() {
 
     val width = cols()
     val height = lines()
-    var lastClick = -1L
 
     renderLoop@ while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
@@ -53,6 +52,7 @@ fun main() {
             }
         }
 
+        // TODO(mlesniak) Zoom bug STILL open!?
         while (true) {
             val ch = getch()
             when (ch) {
@@ -60,12 +60,6 @@ fun main() {
 
                 // left mouse click
                 409 -> {
-                    if (System.currentTimeMillis() - lastClick < 200) {
-                        continue
-                    }
-                    val delta = System.currentTimeMillis() - lastClick
-                    lastClick = System.currentTimeMillis()
-
                     val p = Pos()
                     NCurses.getevent(p)
                     val cx = p.x * wStep + zoom.x1
@@ -77,7 +71,7 @@ fun main() {
                         y1 = cy - (zoom.y2 - zoom.y1) / 4.0,
                         y2 = cy + (zoom.y2 - zoom.y1) / 4.0,
                     )
-                    debug("zoom=$zoom -- $delta")
+                    debug("zoom=$zoom")
                     break
                 }
             }
