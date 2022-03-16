@@ -20,10 +20,8 @@ data class Pos(val x: Int = 0, val y: Int = 0)
 fun main() {
     System.loadLibrary("native")
     init()
-    debug("\n\n\n${Date()}")
 
     var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
-    debug("initial zoom=$zoom")
     val maxIteration = 256
 
     val width = cols()
@@ -73,8 +71,6 @@ fun main() {
                     val cx = p.x * wStep + zoom.x1
                     val cy = zoom.y1 - p.y * hStep
 
-                    debug("cx=$cx, cy=$cy")
-                    debug("x-range: ${(zoom.x2 - zoom.x1).absoluteValue}")
                     zooms += zoom
                     zoom = zoom.copy(
                         x1 = cx - (zoom.x2 - zoom.x1).absoluteValue / 4.0,
@@ -82,7 +78,6 @@ fun main() {
                         y1 = cy + (zoom.y2 - zoom.y1).absoluteValue / 4.0,
                         y2 = cy - (zoom.y2 - zoom.y1).absoluteValue / 4.0,
                     )
-                    debug("outzoom = $zoom")
                     break
                 }
             }
