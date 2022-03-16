@@ -14,20 +14,21 @@ import kotlin.math.absoluteValue
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 data class Pos(val x: Int = 0, val y: Int = 0)
 
-// TODO(mlesniak) Zoom out
 // TODO(mlesniak) Refactoring and clean up
 // TODO(mlesniak) Parallelization on rows via TaskPools?
 // TODO(mlesniak) Higher precision using BigDecimal?
 fun main() {
     System.loadLibrary("native")
     init()
-    debug("\n\n${Date()}")
+    debug("\n\n\n${Date()}")
 
     var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
+    debug("initial zoom=$zoom")
     val maxIteration = 256
 
     val width = cols()
     val height = lines()
+    val zooms = mutableListOf<Rect>()
 
     renderLoop@ while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
@@ -41,6 +42,7 @@ fun main() {
             for (x in 0 until width) {
                 val x1 = x * wStep + zoom.x1
 
+                // TODO(mlesniak) Use a lambda function to handle the value?
                 val iterations = checkIteration(x1, y1, maxIteration)
                 val c = asciiChar(maxIteration, iterations)
                 val col = color(maxIteration, iterations)
@@ -53,6 +55,14 @@ fun main() {
             when (ch) {
                 'q'.code -> break@renderLoop
 
+                'z'.code -> {
+                    if (zooms.isNotEmpty()) {
+                        zoom = zooms.last()
+                        zooms.removeLast()
+                    }
+                    break
+                }
+
                 // left mouse click
                 409 -> {
                     val p = Pos()
@@ -63,13 +73,16 @@ fun main() {
                     val cx = p.x * wStep + zoom.x1
                     val cy = zoom.y1 - p.y * hStep
 
+                    debug("cx=$cx, cy=$cy")
+                    debug("x-range: ${(zoom.x2 - zoom.x1).absoluteValue}")
+                    zooms += zoom
                     zoom = zoom.copy(
-                        x1 = cx - (zoom.x2 - zoom.x1) / 4.0,
-                        x2 = cx + (zoom.x2 - zoom.x1) / 4.0,
-                        y1 = cy - (zoom.y2 - zoom.y1) / 4.0,
-                        y2 = cy + (zoom.y2 - zoom.y1) / 4.0,
+                        x1 = cx - (zoom.x2 - zoom.x1).absoluteValue / 4.0,
+                        x2 = cx + (zoom.x2 - zoom.x1).absoluteValue / 4.0,
+                        y1 = cy + (zoom.y2 - zoom.y1).absoluteValue / 4.0,
+                        y2 = cy - (zoom.y2 - zoom.y1).absoluteValue / 4.0,
                     )
-                    debug("zoom=$zoom")
+                    debug("outzoom = $zoom")
                     break
                 }
             }

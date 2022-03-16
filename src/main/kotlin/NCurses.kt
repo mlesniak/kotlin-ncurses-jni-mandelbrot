@@ -1,5 +1,8 @@
 package com.mlesniak.main
 
+/**
+ * // TODO(mlesniak) JNI, specialized for this use case, not general ncruses interface
+ */
 class NCurses {
     companion object {
         @JvmStatic

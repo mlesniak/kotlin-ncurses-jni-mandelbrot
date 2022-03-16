@@ -10,7 +10,7 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_init(JNIEnv *env, jclass o
     noecho();
     curs_set(0);
 
-    mousemask(BUTTON1_CLICKED, NULL);
+    mousemask(BUTTON1_CLICKED | BUTTON2_CLICKED, NULL);
     keypad(stdscr, TRUE);
 
     start_color();
