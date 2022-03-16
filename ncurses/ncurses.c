@@ -10,7 +10,7 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_init(JNIEnv *env, jclass o
     noecho();
     curs_set(0);
 
-    mousemask(BUTTON1_PRESSED | BUTTON2_PRESSED, NULL);
+    mousemask(BUTTON1_CLICKED, NULL);
     keypad(stdscr, TRUE);
 
     start_color();
@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_timeout(JNIEnv *env, jclas
     timeout(t);
 }
 
-JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_getevent(JNIEnv *env, jclass obj, jobject jobj) {
+JNIEXPORT jboolean Java_com_mlesniak_main_NCurses_getevent(JNIEnv *env, jclass obj, jobject jobj) {
     MEVENT event;
     if (getmouse(&event) == OK) {
 //        char s[80];
@@ -70,8 +70,9 @@ JNIEXPORT void JNICALL Java_com_mlesniak_main_NCurses_getevent(JNIEnv *env, jcla
         (*env)->SetIntField(env, jobj, x, event.x);
         jfieldID y = (*env)->GetFieldID(env, cls, "y", "I");
         (*env)->SetIntField(env, jobj, y, event.y);
-
+        return true;
     }
+    return false;
 }
 
 

@@ -30,6 +30,6 @@ class NCurses {
         external fun refresh(): Int
 
         @JvmStatic
-        external fun getevent(p: Pos)
+        external fun getevent(p: Pos): Boolean
     }
 }

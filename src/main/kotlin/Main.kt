@@ -14,6 +14,7 @@ import kotlin.math.absoluteValue
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 data class Pos(val x: Int = 0, val y: Int = 0)
 
+// TODO(mlesniak) Zoom out
 // TODO(mlesniak) Refactoring and clean up
 // TODO(mlesniak) Parallelization on rows via TaskPools?
 // TODO(mlesniak) Higher precision using BigDecimal?
@@ -21,8 +22,6 @@ fun main() {
     System.loadLibrary("native")
     init()
     debug("\n\n${Date()}")
-
-    var lastRenderTime = System.currentTimeMillis()
 
     var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 256
@@ -35,9 +34,6 @@ fun main() {
         val h = (zoom.y2 - zoom.y1).absoluteValue
         val wStep = w / width
         val hStep = h / height
-
-        debug("Last render was ${System.currentTimeMillis() - lastRenderTime}")
-        lastRenderTime = System.currentTimeMillis()
 
         clear()
         for (y in 0 until height) {
@@ -52,7 +48,6 @@ fun main() {
             }
         }
 
-        // TODO(mlesniak) Zoom bug STILL open!?
         while (true) {
             val ch = getch()
             when (ch) {
@@ -61,7 +56,10 @@ fun main() {
                 // left mouse click
                 409 -> {
                     val p = Pos()
-                    NCurses.getevent(p)
+                    if (!NCurses.getevent(p)) {
+                        // Ignore other events.
+                        continue
+                    }
                     val cx = p.x * wStep + zoom.x1
                     val cy = zoom.y1 - p.y * hStep
 
