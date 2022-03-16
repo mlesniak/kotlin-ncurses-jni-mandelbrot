@@ -8,14 +8,21 @@ import com.mlesniak.main.NCurses.Companion.getch
 import com.mlesniak.main.NCurses.Companion.init
 import com.mlesniak.main.NCurses.Companion.lines
 import java.io.File
+import java.util.Date
 import kotlin.math.absoluteValue
 
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 data class Pos(val x: Int = 0, val y: Int = 0)
 
+// TODO(mlesniak) Refactoring and clean up
+// TODO(mlesniak) Parallelization on rows via TaskPools?
+// TODO(mlesniak) Higher precision using BigDecimal?
 fun main() {
     System.loadLibrary("native")
     init()
+    debug("\n\n${Date()}")
+
+    var lastRenderTime = System.currentTimeMillis()
 
     var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 256
@@ -24,12 +31,16 @@ fun main() {
     val height = lines()
     var lastClick = -1L
 
-    while (true) {
+    renderLoop@ while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
         val h = (zoom.y2 - zoom.y1).absoluteValue
         val wStep = w / width
         val hStep = h / height
 
+        debug("Last render was ${System.currentTimeMillis() - lastRenderTime}")
+        lastRenderTime = System.currentTimeMillis()
+
+        clear()
         for (y in 0 until height) {
             val y1 = zoom.y1 - y * hStep
             for (x in 0 until width) {
@@ -42,37 +53,33 @@ fun main() {
             }
         }
 
-        val ch = getch()
-        when (ch) {
-            'q'.code -> break
-            'z'.code -> {
-                zoom = zoom.copy(
-                    x1 = zoom.x1 / 2,
-                    y1 = zoom.y1 / 2,
-                    x2 = zoom.x2 / 2,
-                    y2 = zoom.y2 / 2,
-                )
-                clear()
-            }
-            409 -> {
-                // TODO(mlesniak) Fix still open zoom bug.
-                if (System.currentTimeMillis() - lastClick < 200) {
-                    continue
+        while (true) {
+            val ch = getch()
+            when (ch) {
+                'q'.code -> break@renderLoop
+
+                // left mouse click
+                409 -> {
+                    if (System.currentTimeMillis() - lastClick < 200) {
+                        continue
+                    }
+                    val delta = System.currentTimeMillis() - lastClick
+                    lastClick = System.currentTimeMillis()
+
+                    val p = Pos()
+                    NCurses.getevent(p)
+                    val cx = p.x * wStep + zoom.x1
+                    val cy = zoom.y1 - p.y * hStep
+
+                    zoom = zoom.copy(
+                        x1 = cx - (zoom.x2 - zoom.x1) / 4.0,
+                        x2 = cx + (zoom.x2 - zoom.x1) / 4.0,
+                        y1 = cy - (zoom.y2 - zoom.y1) / 4.0,
+                        y2 = cy + (zoom.y2 - zoom.y1) / 4.0,
+                    )
+                    debug("zoom=$zoom -- $delta")
+                    break
                 }
-                lastClick = System.currentTimeMillis()
-
-                val p = Pos()
-                NCurses.getevent(p)
-                val cx = p.x * wStep + zoom.x1
-                val cy = zoom.y1 - p.y * hStep
-
-                zoom = zoom.copy(
-                    x1 = cx - (zoom.x2 - zoom.x1) / 4.0,
-                    x2 = cx + (zoom.x2 - zoom.x1) / 4.0,
-                    y1 = cy - (zoom.y2 - zoom.y1) / 4.0,
-                    y2 = cy + (zoom.y2 - zoom.y1) / 4.0,
-                )
-                clear()
             }
         }
     }
@@ -112,5 +119,5 @@ fun checkIteration(x0: Double, y0: Double, maxIteration: Int): Int {
 }
 
 private fun debug(msg: Any) {
-    File("out").appendText(msg.toString())
+    File("out").appendText("$msg\n")
 }
