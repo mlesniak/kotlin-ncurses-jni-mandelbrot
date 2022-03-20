@@ -1,5 +1,6 @@
 package com.mlesniak.main
 
+import com.mlesniak.main.NCurses.Companion.MOUSE_CLICK
 import com.mlesniak.main.NCurses.Companion.addch
 import com.mlesniak.main.NCurses.Companion.clear
 import com.mlesniak.main.NCurses.Companion.cols
@@ -87,8 +88,7 @@ fun main() {
                     }
                 }
 
-                // left mouse click
-                409 -> { // TODO(mlesniak) NCurses.Button_1 pressed
+                MOUSE_CLICK -> {
                     val p = Pos()
                     if (!NCurses.getevent(p)) {
                         // Ignore other events.

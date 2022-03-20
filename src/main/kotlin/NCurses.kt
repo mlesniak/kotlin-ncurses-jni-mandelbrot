@@ -1,10 +1,18 @@
 package com.mlesniak.main
 
 /**
- * // TODO(mlesniak) JNI, specialized for this use case, not general ncruses interface
+ * This class defines basic ncurses functions to be used in combination with
+ * the JNI wrapper defined in ncurses/ncurses.c and contains methods for basic
+ * graphical terminal functions.
+ *
+ * The names mirror the names of ncurses, i.e. can be found via man curses,
+ * man curs_color, etc.
  */
 class NCurses {
     companion object {
+        // Value returned by getch for a mouse click.
+        const val MOUSE_CLICK = 409
+
         @JvmStatic
         external fun init()
 
