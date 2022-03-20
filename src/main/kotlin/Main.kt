@@ -9,29 +9,32 @@ import com.mlesniak.main.NCurses.Companion.init
 import com.mlesniak.main.NCurses.Companion.lines
 import com.mlesniak.main.NCurses.Companion.refresh
 import java.io.File
+import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
-import kotlin.random.Random
 
 data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 data class Pos(val x: Int = 0, val y: Int = 0)
 
-// TODO(mlesniak) Parallelization on rows via TaskPools?
-// TODO(mlesniak) Add LRU cache for zoombing back including images
-// TODO(mlesniak) Refactoring and clean up
+data class CacheEntry(val zoom: Rect, val values: ConcurrentHashMap<Int, Array<Int>>)
+
 // TODO(mlesniak) Higher precision using BigDecimal?
+// TODO(mlesniak) Refactoring and clean up
 fun main() {
     System.loadLibrary("native")
     init()
+    debug("\n\n\n${Date()}")
 
     var zoom = Rect(-2.0, 1.2, 1.0, -1.2)
     val maxIteration = 256
 
     val width = cols()
     val height = lines()
-    val zooms = mutableListOf<Rect>()
+
+    val zoomCache = mutableListOf<CacheEntry>()
+    var image = ConcurrentHashMap<Int, Array<Int>>()
 
     renderLoop@ while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
@@ -43,23 +46,20 @@ fun main() {
         val lock = Object()
 
         clear()
-        val m = ConcurrentHashMap<Int, Array<Int>>()
         for (y in 0 until height) {
             pool.submit {
-                var i = 0
-                val mx = Random.nextLong(100, 1000) * 10000
-                while (i < mx) {
-                    i++
-                }
-                val y1 = zoom.y1 - y * hStep
-                val values = Array<Int>(width) { 0 }
-                for (x in 0 until width) {
-                    val x1 = x * wStep + zoom.x1
-                    val iterations = checkIteration(x1, y1, maxIteration)
-                    values[x] = iterations
+                val values = if (image[y] != null) image[y]!! else {
+                    val values = Array(width) { 0 }
+                    val y1 = zoom.y1 - y * hStep
+                    for (x in 0 until width) {
+                        val x1 = x * wStep + zoom.x1
+                        val iterations = checkIteration(x1, y1, maxIteration)
+                        values[x] = iterations
+                    }
+                    values
                 }
 
-                m[y] = values
+                image[y] = values
                 synchronized(lock) {
                     for (x in 0 until width) {
                         val c = asciiChar(maxIteration, values[x])
@@ -70,24 +70,26 @@ fun main() {
                 }
             }
         }
+
         pool.shutdown()
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS)
 
         while (true) {
-            val ch = getch()
-            when (ch) {
+            when (getch()) {
                 'q'.code -> break@renderLoop
 
                 'z'.code -> {
-                    if (zooms.isNotEmpty()) {
-                        zoom = zooms.last()
-                        zooms.removeLast()
+                    if (zoomCache.isNotEmpty()) {
+                        val entry = zoomCache.last()
+                        zoom = entry.zoom
+                        image = entry.values
+                        zoomCache.removeLast()
                         break
                     }
                 }
 
                 // left mouse click
-                409 -> {
+                409 -> { // TODO(mlesniak) NCurses.Button_1 pressed
                     val p = Pos()
                     if (!NCurses.getevent(p)) {
                         // Ignore other events.
@@ -96,8 +98,8 @@ fun main() {
                     val cx = p.x * wStep + zoom.x1
                     val cy = zoom.y1 - p.y * hStep
 
-                    // TODO(mlesniak) zoom buggy
-                    zooms += zoom
+                    zoomCache += CacheEntry(zoom, image)
+                    image = ConcurrentHashMap()
                     zoom = zoom.copy(
                         x1 = cx - (zoom.x2 - zoom.x1).absoluteValue / 4.0,
                         x2 = cx + (zoom.x2 - zoom.x1).absoluteValue / 4.0,
