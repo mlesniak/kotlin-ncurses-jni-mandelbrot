@@ -20,7 +20,6 @@ data class Pos(val x: Int = 0, val y: Int = 0)
 
 data class CacheEntry(val zoom: Rect, val values: ConcurrentHashMap<Int, Array<Int>>)
 
-// TODO(mlesniak) Higher precision using BigDecimal?
 // TODO(mlesniak) Refactoring and clean up
 fun main() {
     System.loadLibrary("native")
