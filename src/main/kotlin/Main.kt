@@ -7,8 +7,8 @@ import com.mlesniak.main.NCurses.Companion.endwin
 import com.mlesniak.main.NCurses.Companion.getch
 import com.mlesniak.main.NCurses.Companion.init
 import com.mlesniak.main.NCurses.Companion.lines
+import com.mlesniak.main.NCurses.Companion.refresh
 import java.io.File
-import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -19,7 +19,7 @@ data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 data class Pos(val x: Int = 0, val y: Int = 0)
 
 // TODO(mlesniak) Parallelization on rows via TaskPools?
-// TODO(mlesniak) Add LRU cache for zoombing back
+// TODO(mlesniak) Add LRU cache for zoombing back including images
 // TODO(mlesniak) Refactoring and clean up
 // TODO(mlesniak) Higher precision using BigDecimal?
 fun main() {
@@ -33,8 +33,6 @@ fun main() {
     val height = lines()
     val zooms = mutableListOf<Rect>()
 
-    debug("\n\n\n${Date()}")
-
     renderLoop@ while (true) {
         val w = (zoom.x2 - zoom.x1).absoluteValue
         val h = (zoom.y2 - zoom.y1).absoluteValue
@@ -42,7 +40,6 @@ fun main() {
         val hStep = h / height
 
         val pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        // val pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
         val lock = Object()
 
         clear()
@@ -54,8 +51,6 @@ fun main() {
                 while (i < mx) {
                     i++
                 }
-                // Thread.sleep(Random.nextLong(100, 1000))
-                debug("staring row $y with $i")
                 val y1 = zoom.y1 - y * hStep
                 val values = Array<Int>(width) { 0 }
                 for (x in 0 until width) {
@@ -63,33 +58,20 @@ fun main() {
                     val iterations = checkIteration(x1, y1, maxIteration)
                     values[x] = iterations
                 }
-                // Thread.sleep(Random.nextLong(100, 1000))
 
                 m[y] = values
-                // synchronized(lock) {
-                //     debug("drawing row $y:")
-                //     for (x in 0 until width) {
-                //         val c = asciiChar(maxIteration, values[x])
-                //         val col = color(maxIteration, values[x])
-                //         addch(x, y, c, col)
-                //     }
-                //     refresh()
-                // }
-                debug("drawing row $y -- finished")
+                synchronized(lock) {
+                    for (x in 0 until width) {
+                        val c = asciiChar(maxIteration, values[x])
+                        val col = color(maxIteration, values[x])
+                        addch(x, y, c, col)
+                    }
+                    refresh()
+                }
             }
         }
         pool.shutdown()
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS)
-
-        for (y in 0 until height) {
-            val values = m[y]!!
-            debug("drawing row $y:")
-            for (x in 0 until width) {
-                val c = asciiChar(maxIteration, values[x])
-                val col = color(maxIteration, values[x])
-                addch(x, y, c, col)
-            }
-        }
 
         while (true) {
             val ch = getch()
@@ -163,5 +145,5 @@ fun checkIteration(x0: Double, y0: Double, maxIteration: Int): Int {
 }
 
 private fun debug(msg: Any) {
-    File("out").appendText("$msg\n")
+    File("debug.log").appendText("$msg\n")
 }
