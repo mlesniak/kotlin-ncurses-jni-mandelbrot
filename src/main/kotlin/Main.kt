@@ -9,6 +9,7 @@ import com.mlesniak.main.NCurses.Companion.getch
 import com.mlesniak.main.NCurses.Companion.init
 import com.mlesniak.main.NCurses.Companion.lines
 import com.mlesniak.main.NCurses.Companion.refresh
+import org.w3c.dom.css.Rect
 import java.io.File
 import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
@@ -16,7 +17,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 
-data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
+
+
+// Ncurses
 data class Pos(val x: Int = 0, val y: Int = 0)
 
 data class CacheEntry(val zoom: Rect, val values: ConcurrentHashMap<Int, Array<Int>>)
@@ -36,43 +39,13 @@ fun main() {
     val zoomCache = mutableListOf<CacheEntry>()
     var image = ConcurrentHashMap<Int, Array<Int>>()
 
+    // TODO(mlesniak) extract computation into own method and class
+    // TODO(mlesniak) separate caching
     renderLoop@ while (true) {
-        val w = (zoom.x2 - zoom.x1).absoluteValue
-        val h = (zoom.y2 - zoom.y1).absoluteValue
-        val wStep = w / width
-        val hStep = h / height
 
-        val pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        val lock = Object()
+        // render for a zoom
 
-        clear()
-        for (y in 0 until height) {
-            pool.submit {
-                val values = if (image[y] != null) image[y]!! else {
-                    val values = Array(width) { 0 }
-                    val y1 = zoom.y1 - y * hStep
-                    for (x in 0 until width) {
-                        val x1 = x * wStep + zoom.x1
-                        val iterations = checkIteration(x1, y1, maxIteration)
-                        values[x] = iterations
-                    }
-                    values
-                }
 
-                image[y] = values
-                synchronized(lock) {
-                    for (x in 0 until width) {
-                        val c = asciiChar(maxIteration, values[x])
-                        val col = color(maxIteration, values[x])
-                        addch(x, y, c, col)
-                    }
-                    refresh()
-                }
-            }
-        }
-
-        pool.shutdown()
-        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS)
 
         while (true) {
             when (getch()) {
