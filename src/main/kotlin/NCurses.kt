@@ -15,6 +15,10 @@ class NCurses {
 
         data class MousePosition(val x: Int = 0, val y: Int = 0)
 
+        /**
+         * Initialized the dynamic library binding to NCurses and
+         * NCurses itself.
+         */
         fun initNCurses() {
             System.loadLibrary("native")
             init()
@@ -22,9 +26,6 @@ class NCurses {
 
         @JvmStatic
         external fun init()
-
-        @JvmStatic
-        external fun timeout(t: Int)
 
         @JvmStatic
         external fun addch(x: Int, y: Int, c: Char, color: Int = 25)

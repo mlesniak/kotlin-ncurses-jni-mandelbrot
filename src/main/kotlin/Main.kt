@@ -9,30 +9,23 @@ import com.mlesniak.main.NCurses.Companion.initNCurses
 import com.mlesniak.main.NCurses.Companion.lines
 import kotlin.math.absoluteValue
 
-val initialZoomLevel = Mandelbrot.Rect(
-    -2.0, 1.2,
-    1.0, -1.2
-)
-const val maxIterations = 256
-
-// TODO(mlesniak) Refactoring and clean up
-// TODO(mlesniak) Add caching on top of it
+// TODO(mlesniak) Caching
 fun main() {
     initNCurses()
-
-    var zoomLevel = initialZoomLevel
     val config = Configuration(
-        cols(),
-        lines(),
-        maxIterations
+        width = cols(),
+        height = lines(),
+        maxIterations = 256
     )
 
-    // TODO(mlesniak) withConfig?
+    var viewport = Viewport(
+        -2.0, 1.2,
+        1.0, -1.2
+    )
     renderLoop@ while (true) {
-        val image = Mandelbrot.compute(config, zoomLevel)
+        val image = Mandelbrot.compute(config, viewport)
         AsciiRenderer.render(config, image)
 
-        // Keyboard handling.
         while (true) {
             when (getch()) {
                 'q'.code -> break@renderLoop
@@ -48,22 +41,23 @@ fun main() {
                 }
 
                 MOUSE_CLICK -> {
+                    // To simplify the C code, we create the object which
+                    // stores the mouse position in the JVM space.
                     val mousePosition = MousePosition()
-                    if (!NCurses.getevent(mousePosition)) {
-                        // Ignore other events.
-                        continue
-                    }
+                    NCurses.getevent(mousePosition)
 
-                    val wStep = (zoomLevel.x2 - zoomLevel.x1).absoluteValue / config.width
-                    val hStep = (zoomLevel.y2 - zoomLevel.y1).absoluteValue / config.height
-                    val cx = mousePosition.x * wStep + zoomLevel.x1
-                    val cy = zoomLevel.y1 - mousePosition.y * hStep
+                    // Compute new center of the viewport based on the clicked
+                    // mouse position.
+                    val wStep = (viewport.x2 - viewport.x1).absoluteValue / config.width
+                    val hStep = (viewport.y2 - viewport.y1).absoluteValue / config.height
+                    val cx = mousePosition.x * wStep + viewport.x1
+                    val cy = viewport.y1 - mousePosition.y * hStep
 
-                    zoomLevel = zoomLevel.copy(
-                        x1 = cx - (zoomLevel.x2 - zoomLevel.x1).absoluteValue / 4.0,
-                        x2 = cx + (zoomLevel.x2 - zoomLevel.x1).absoluteValue / 4.0,
-                        y1 = cy + (zoomLevel.y2 - zoomLevel.y1).absoluteValue / 4.0,
-                        y2 = cy - (zoomLevel.y2 - zoomLevel.y1).absoluteValue / 4.0,
+                    viewport = viewport.copy(
+                        x1 = cx - (viewport.x2 - viewport.x1).absoluteValue / 4.0,
+                        x2 = cx + (viewport.x2 - viewport.x1).absoluteValue / 4.0,
+                        y1 = cy + (viewport.y2 - viewport.y1).absoluteValue / 4.0,
+                        y2 = cy - (viewport.y2 - viewport.y1).absoluteValue / 4.0,
                     )
                     break
                 }

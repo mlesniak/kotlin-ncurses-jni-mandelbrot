@@ -11,41 +11,44 @@ data class Configuration(
     val maxIterations: Int
 )
 
+data class Viewport(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
+
+typealias Image = Map<Int, Array<Int>>
+
+/**
+ * Implements a parallelized mandelbrot computation parallelizing the computation
+ * by rows of the Viewport.
+ */
 class Mandelbrot {
-
-    // TODO(mlesniak) better name?
-    data class Rect(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
-
     companion object {
-        fun compute(config: Configuration, rect: Rect): Map<Int, Array<Int>> {
-            val image = ConcurrentHashMap<Int, Array<Int>>()
-
-            val wStep = (rect.x2 - rect.x1).absoluteValue / config.width
-            val hStep = (rect.y2 - rect.y1).absoluteValue / config.height
-
+        fun compute(config: Configuration, viewport: Viewport): Image {
+            val wStep = (viewport.x2 - viewport.x1).absoluteValue / config.width
+            val hStep = (viewport.y2 - viewport.y1).absoluteValue / config.height
             val pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+            val image = ConcurrentHashMap<Int, Array<Int>>()
 
             for (y in 0 until config.height) {
                 pool.submit {
                     val values = Array(config.width) { 0 }
-                    val y1 = rect.y1 - y * hStep
+                    val y1 = viewport.y1 - y * hStep
                     for (x in 0 until config.width) {
-                        val x1 = x * wStep + rect.x1
+                        val x1 = x * wStep + viewport.x1
                         val iterations = checkIteration(x1, y1, config.maxIterations)
                         values[x] = iterations
                     }
-
                     image[y] = values
                 }
             }
 
             pool.shutdown()
             pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS)
-
             return image
         }
 
-        fun checkIteration(x0: Double, y0: Double, maxIteration: Int): Int {
+        // Implementation remark: In an experiment, we tried to use BigDecimals
+        // for higher precision, but even with parallelization, computational
+        // runtime became so high that waiting for it to finish made no fun.
+        private fun checkIteration(x0: Double, y0: Double, maxIteration: Int): Int {
             var x = 0.0
             var y = 0.0
             var iter = 0
