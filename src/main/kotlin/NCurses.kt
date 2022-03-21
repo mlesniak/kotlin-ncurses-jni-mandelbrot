@@ -13,6 +13,13 @@ class NCurses {
         // Value returned by getch for a mouse click.
         const val MOUSE_CLICK = 409
 
+        data class MousePosition(val x: Int = 0, val y: Int = 0)
+
+        fun initNCurses() {
+            System.loadLibrary("native")
+            init()
+        }
+
         @JvmStatic
         external fun init()
 
@@ -41,6 +48,6 @@ class NCurses {
         external fun refresh(): Int
 
         @JvmStatic
-        external fun getevent(p: Pos): Boolean
+        external fun getevent(p: MousePosition): Boolean
     }
 }

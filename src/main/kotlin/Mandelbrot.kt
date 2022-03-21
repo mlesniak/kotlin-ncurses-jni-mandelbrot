@@ -1,7 +1,5 @@
 package com.mlesniak.main
 
-import com.mlesniak.main.NCurses.Companion.addch
-import com.mlesniak.main.NCurses.Companion.refresh
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -62,45 +60,6 @@ class Mandelbrot {
             }
 
             return iter
-        }
-    }
-}
-
-// TODO(mlesniak) split into own class and implement ncurses interface
-class AsciiRenderer {
-    companion object {
-        fun render(config: Configuration, iterationImage: Map<Int, Array<Int>>) = with(config) {
-            for (y in 0 until height) {
-                val values = iterationImage[y]!!
-                for (x in 0 until width) {
-                    val c = asciiChar(maxIterations, values[x])
-                    val col = color(maxIterations, values[x])
-                    addch(x, y, c, col)
-                }
-                refresh()
-            }
-        }
-
-        // synchronized(lock) {
-        //     for (x in 0 until width) {
-        //         val c = asciiChar(maxIteration, values[x])
-        //         val col = color(maxIteration, values[x])
-        //         addch(x, y, c, col)
-        //     }
-        //     refresh()
-        // }
-        fun color(maxIteration: Int, iter: Int): Int {
-            val colorStretchFactor = 20
-            val maxColors = 24
-            val colors = (1..maxColors).toList() + List(colorStretchFactor) { 24 }
-            return colors[((colors.size - 1).toDouble() / maxIteration * iter).toInt()]
-        }
-
-        fun asciiChar(maxIteration: Int, iter: Int): Char {
-            val density = " .,-=+:;cba!?0123456789\$W#@Ñ"
-
-            val index = ((density.length - 1).toDouble() / maxIteration * iter).toInt()
-            return density[index]
         }
     }
 }
