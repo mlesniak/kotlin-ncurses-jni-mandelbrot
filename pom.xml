@@ -85,23 +85,6 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    <!--Allow the application to be run via maven-->
-                    <!--mvnd package exec:exec@run-with-maven-->
-                    <execution>
-                        <id>run-with-maven</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <arguments>
-                                <argument>-Djava.library.path=target</argument>
-                                <argument>-classpath</argument>
-                                <classpath />
-                                <argument>${mainClass}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
                 </executions>
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
