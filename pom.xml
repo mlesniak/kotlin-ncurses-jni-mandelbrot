@@ -73,6 +73,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
+                    <!--Build ncurses binding-->
                     <execution>
                         <id>build-curses</id>
                         <phase>package</phase>
@@ -84,7 +85,27 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
+                    <!--Allow the application to be run via maven-->
+                    <!--mvnd package exec:exec@run-with-maven-->
+                    <execution>
+                        <id>run-with-maven</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-Djava.library.path=target</argument>
+                                <argument>-classpath</argument>
+                                <classpath />
+                                <argument>${mainClass}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
+                <configuration>
+                    <mainClass>${mainClass}</mainClass>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -141,7 +162,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
