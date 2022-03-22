@@ -11,7 +11,6 @@ import kotlin.math.absoluteValue
 
 // TODO(mlesniak) Caching
 fun main() {
-    debug("\n\nStarting")
     initNCurses()
     val config = Configuration(
         width = cols(),
@@ -67,5 +66,4 @@ fun main() {
     }
 
     endwin()
-    debug("Finish")
 }
