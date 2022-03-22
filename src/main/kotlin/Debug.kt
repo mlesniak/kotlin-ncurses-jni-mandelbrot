@@ -3,7 +3,7 @@ package com.mlesniak.main
 import java.io.File
 
 val debugStartTime = System.currentTimeMillis()
-const val debugFilename = "debug.log"
+val debugFilename = "debug-$debugStartTime.log"
 
 /**
  * Simple debug method to log the string representation of anything which is passed
