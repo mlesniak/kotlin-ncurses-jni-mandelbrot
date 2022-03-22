@@ -17,15 +17,15 @@ class Mandelbrot {
             val hStep = (viewport.y2 - viewport.y1).absoluteValue / config.height
             val image = ConcurrentHashMap<Int, Array<Int>>()
 
-            (0 until config.height).toList().parallelStream().forEach { y ->
+            (0 until config.height).toList().parallelStream().forEach { pixelRow ->
                 val values = Array(config.width) { 0 }
-                val y1 = viewport.y1 - y * hStep
-                for (x in 0 until config.width) {
-                    val x1 = x * wStep + viewport.x1
+                val y1 = viewport.y1 - pixelRow * hStep
+                for (pixelCol in 0 until config.width) {
+                    val x1 = pixelCol * wStep + viewport.x1
                     val iterations = checkIteration(x1, y1, config.maxIterations)
-                    values[x] = iterations
+                    values[pixelCol] = iterations
                 }
-                image[y] = values
+                image[pixelRow] = values
             }
 
             return image
