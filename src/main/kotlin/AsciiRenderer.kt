@@ -1,7 +1,5 @@
 package com.mlesniak.main
 
-import com.mlesniak.main.NCurses.Companion.clear
-
 /**
  * Renderer which uses NCurses (provided via JNI bindings) to render a viewport
  * of the Mandelbrot set to the terminal.
@@ -9,7 +7,7 @@ import com.mlesniak.main.NCurses.Companion.clear
 class AsciiRenderer {
     companion object {
         fun render(config: Configuration, iterationImage: Image) = with(config) {
-            clear()
+            NCurses.clear()
             for (y in 0 until height) {
                 val values = iterationImage[y]!!
                 for (x in 0 until width) {
