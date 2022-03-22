@@ -3,6 +3,7 @@
 This is a small terminal-based renderer using [ncurses](https://en.wikipedia.org/wiki/Ncurses) to render the [Mandelbrot](https://en.wikipedia.org/wiki/Mandelbrot_set) set in a standard terminal. By using your mouse you can zoom into more interesting areas, use `z` to zoom out again and `q` to quit.
 
 ![Mandelbrot set](screenshot.png)
+![Zoomed part of the Mandelbrot set](zoom.png)
 
 ## Build
 
