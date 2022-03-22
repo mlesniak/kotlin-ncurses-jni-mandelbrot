@@ -1,8 +1,6 @@
 package com.mlesniak.main
 
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 
 data class Viewport(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
@@ -10,33 +8,26 @@ data class Viewport(val x1: Double, val y1: Double, val x2: Double, val y2: Doub
 typealias Image = Map<Int, Array<Int>>
 
 /**
- * Implements a parallelized mandelbrot computation parallelizing the computation
- * by rows of the Viewport.
+ * Implements a mandelbrot computation parallelizing the computation by rows.
  */
 class Mandelbrot {
     companion object {
         fun compute(config: Configuration, viewport: Viewport): Image {
             val wStep = (viewport.x2 - viewport.x1).absoluteValue / config.width
             val hStep = (viewport.y2 - viewport.y1).absoluteValue / config.height
-            // TODO(mlesniak) Use parallel stream instead?
-            val pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
             val image = ConcurrentHashMap<Int, Array<Int>>()
 
-            for (y in 0 until config.height) {
-                pool.submit {
-                    val values = Array(config.width) { 0 }
-                    val y1 = viewport.y1 - y * hStep
-                    for (x in 0 until config.width) {
-                        val x1 = x * wStep + viewport.x1
-                        val iterations = checkIteration(x1, y1, config.maxIterations)
-                        values[x] = iterations
-                    }
-                    image[y] = values
+            (0 until config.height).toList().parallelStream().forEach { y ->
+                val values = Array(config.width) { 0 }
+                val y1 = viewport.y1 - y * hStep
+                for (x in 0 until config.width) {
+                    val x1 = x * wStep + viewport.x1
+                    val iterations = checkIteration(x1, y1, config.maxIterations)
+                    values[x] = iterations
                 }
+                image[y] = values
             }
 
-            pool.shutdown()
-            pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS)
             return image
         }
 
@@ -49,7 +40,10 @@ class Mandelbrot {
             var iter = 0
 
             // Explanation for formula at
-            // https://en.wikipedia.org/wiki/Mandelbrot_set#Computer_drawings
+            // https://en.wikipedia.org/wiki/Mandelbrot_set#Computer_drawings.
+            //
+            // We compute the real and imaginary parts on the complex plane
+            // separately.
             while (x * x + y * y <= 2 * 2 && iter < maxIteration) {
                 val xTmp = x * x - y * y + x0
                 y = 2 * x * y + y0
