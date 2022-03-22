@@ -1,23 +1,28 @@
 # Overview
 
-TODO(mlesniak) Introduction of purpose
+This is a small terminal-based renderer using [ncurses](https://en.wikipedia.org/wiki/Ncurses) to render the [Mandelbrot](https://en.wikipedia.org/wiki/Mandelbrot_set) set in a standard terminal. By using your mouse you can zoom into more interesting areas, use `z` to zoom out again and `q` to quit.
 
-JNI
-NCURSES
-Mandelbrot renderer
 
 ## Build
 
+You need to have a correctly defined `JAVA_HOME` environment as well as the development libraries for ncurses. On mac, these can be installed via Homebrew using
+
+    brew install ncurses
+
+Afterwards, a
+
     mvn clean package
 
+should suffice.
+
+Note that I only tested the build scripts on a Mac. 
+
 ## Run
+
+After a successful build, execute
 
     java -Djava.library.path=target -jar target/main-1.0-SNAPSHOT.jar
 
 ## Design Remarks
 
-TODO(mlesniak) Add some more
-
-- No over engineering and unnecessary code for future improvements which will never come
-- Eveyr file is around 50 lines of code
-- 
+While implementing this small application, I strived to prevent over engineering, i.e. not adding code for future improvements (which won't come anyway) by using fancy design patterns, single implementation interfaces, etc.. To keep the overall structure understanadble I also tried to keep the average lines of code per file at around 50.

@@ -206,7 +206,4 @@
             </dependencies>
         </profile>
     </profiles>
-
-    <!-- TODO(mlesniak) Add goal to run compiled program with correct parameters -->
-
 </project>
