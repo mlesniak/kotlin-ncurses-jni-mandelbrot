@@ -16,7 +16,7 @@ Afterwards, a
 
 should suffice.
 
-Note that I only tested the build scripts on a Mac. 
+Note that I only tested the build scripts on a mac. 
 
 ## Run
 
