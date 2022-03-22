@@ -24,6 +24,7 @@ class Mandelbrot {
         fun compute(config: Configuration, viewport: Viewport): Image {
             val wStep = (viewport.x2 - viewport.x1).absoluteValue / config.width
             val hStep = (viewport.y2 - viewport.y1).absoluteValue / config.height
+            // TODO(mlesniak) Use parallel stream instead?
             val pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
             val image = ConcurrentHashMap<Int, Array<Int>>()
 
