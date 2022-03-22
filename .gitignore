@@ -10,3 +10,5 @@ dependency-reduced-pom.xml
 # No binaries from C code
 *.o
 *.dylib
+
+*.log
