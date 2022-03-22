@@ -5,12 +5,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 
-data class Configuration(
-    val width: Int,
-    val height: Int,
-    val maxIterations: Int
-)
-
 data class Viewport(val x1: Double, val y1: Double, val x2: Double, val y2: Double)
 
 typealias Image = Map<Int, Array<Int>>

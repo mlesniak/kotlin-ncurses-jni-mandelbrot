@@ -9,6 +9,16 @@ import com.mlesniak.main.NCurses.Companion.initNCurses
 import com.mlesniak.main.NCurses.Companion.lines
 import kotlin.math.absoluteValue
 
+data class Configuration(
+    val width: Int,
+    val height: Int,
+    val maxIterations: Int
+)
+
+/**
+ * Main entry point. Contains initial values, defines rendering output and handles
+ * keyboard and mouse actions (based on the NCurses interface).
+ */
 fun main() {
     initNCurses()
     val config = Configuration(
