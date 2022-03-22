@@ -6,7 +6,7 @@ This is a small terminal-based renderer using [ncurses](https://en.wikipedia.org
 
 ## Build
 
-You need to have a correctly defined `JAVA_HOME` environment as well as the development libraries for ncurses. On mac, these can be installed via Homebrew using
+You need to have a correctly defined `JAVA_HOME` environment as well as the development libraries for ncurses and build essentials for C development. On mac, these can be installed via Homebrew using
 
     brew install ncurses
 
