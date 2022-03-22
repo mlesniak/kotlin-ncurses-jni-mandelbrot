@@ -3,6 +3,7 @@ package com.mlesniak.main
 import java.io.File
 
 val debugStartTime = System.currentTimeMillis()
+const val debugFilename = "debug.log"
 
 /**
  * Simple debug method to log the string representation of anything which is passed
@@ -26,5 +27,5 @@ fun debug(msg: Any) {
             .reversed()
     val ts = String.format("%10s", timestamp)
 
-    File("debug.log").appendText("$prefixNewlines$ts: $rest\n")
+    File(debugFilename).appendText("$prefixNewlines$ts: $rest\n")
 }
